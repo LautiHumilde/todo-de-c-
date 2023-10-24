@@ -1,53 +1,57 @@
 ﻿using System;
+using System.Collections.Generic;
 
 class Program
 {
     static void Main()
     {
-        int[] array = { 1, 2, 3, 4, 5 };
-        reverse(array);
-
-        string parentesis = "())(";
-
-        if (balanceado(parentesis))
-        {
-            Console.WriteLine("true");
-        }
-        else
-        {
-            Console.WriteLine("false");
-        }
+        string expresion = "5 3 4 * + 7 -";
+        int resultado = EvaluarExpresion(expresion);
+        Console.WriteLine("Resultado: " + resultado);
     }
 
-    static void reverse(int[] arr)
+    static int EvaluarExpresion(string expresion)
     {
-        for(int i = arr.Length-1 ; i >= 0; i-- ){
-            Console.WriteLine(arr[i]);
-        }
-    }
+        string[] tokens = expresion.Split(' ');
 
-    static bool balanceado(string parentesis)
-    {
-        int contador = 0;
+        Stack<int> pila = new Stack<int>();
 
-        foreach (char simbolo in parentesis)
+        foreach (string token in tokens)
         {
-            if (simbolo == '(')
+            if (int.TryParse(token, out int numero))
             {
-                contador++;
+                pila.Push(numero);
             }
-            else if (simbolo == ')')
+            else
             {
-                contador--;
-
-                if (contador < 0)
-                {
-                    return false;
-                }
+                RealizarOperacion(pila, token);
             }
         }
 
-        return contador == 0;
+        return pila.Pop();
     }
 
+    static void RealizarOperacion(Stack<int> pila, string operador)
+    {
+        int operand2 = pila.Pop();
+        int operand1 = pila.Pop();
+
+        switch (operador)
+        {
+            case "+":
+                pila.Push(operand1 + operand2);
+                break;
+            case "-":
+                pila.Push(operand1 - operand2);
+                break;
+            case "*":
+                pila.Push(operand1 * operand2);
+                break;
+            case "/":
+                pila.Push(operand1 / operand2);
+                break;
+            default:
+                throw new ArgumentException("Token no reconocido: " + operador);
+        }
+    }
 }
